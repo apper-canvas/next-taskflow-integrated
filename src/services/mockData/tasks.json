@@ -1,0 +1,62 @@
+[
+  {
+    "id": "1",
+    "title": "Complete quarterly report presentation",
+    "completed": false,
+    "category": "work",
+    "priority": "high",
+    "dueDate": "2024-01-15T17:00:00.000Z",
+    "createdAt": "2024-01-10T09:00:00.000Z",
+    "completedAt": null
+  },
+  {
+    "id": "2",
+    "title": "Review team performance metrics",
+    "completed": true,
+    "category": "work",
+    "priority": "medium",
+    "dueDate": "2024-01-12T15:00:00.000Z",
+    "createdAt": "2024-01-08T14:30:00.000Z",
+    "completedAt": "2024-01-11T16:45:00.000Z"
+  },
+  {
+    "id": "3",
+    "title": "Schedule dentist appointment",
+    "completed": false,
+    "category": "personal",
+    "priority": "low",
+    "dueDate": null,
+    "createdAt": "2024-01-09T11:20:00.000Z",
+    "completedAt": null
+  },
+  {
+    "id": "4",
+    "title": "Prepare client proposal for new project",
+    "completed": false,
+    "category": "urgent",
+    "priority": "high",
+    "dueDate": "2024-01-14T12:00:00.000Z",
+    "createdAt": "2024-01-11T08:15:00.000Z",
+    "completedAt": null
+  },
+  {
+    "id": "5",
+    "title": "Buy groceries for weekend dinner party",
+    "completed": false,
+    "category": "personal",
+    "priority": "medium",
+    "dueDate": "2024-01-13T18:00:00.000Z",
+    "createdAt": "2024-01-10T19:30:00.000Z",
+    "completedAt": null
+  },
+  {
+    "id": "6",
+    "title": "Update software documentation",
+    "completed": true,
+    "category": "work",
+    "priority": "low",
+    "dueDate": "2024-01-10T17:00:00.000Z",
+    "createdAt": "2024-01-05T10:00:00.000Z",
+    "completedAt": "2024-01-09T14:20:00.000Z"
+  }
+]
