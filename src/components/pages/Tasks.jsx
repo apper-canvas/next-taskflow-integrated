@@ -112,7 +112,6 @@ return (
     <>
       <TaskList
         tasks={tasks}
-tasks={tasks}
         categories={categories}
         loading={loading}
         error={error}
