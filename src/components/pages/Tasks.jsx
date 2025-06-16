@@ -82,6 +82,15 @@ const Tasks = () => {
     } catch (error) {
       throw error // Let the calling component handle the error
     }
+}
+
+  const handleReorderTasks = async (taskIds) => {
+    try {
+      await taskService.reorderTasks(taskIds)
+      await loadData() // Refresh the task list
+    } catch (error) {
+      throw error // Let the calling component handle the error
+    }
   }
 
   const handleDeleteTask = async (taskId) => {
@@ -92,7 +101,6 @@ const Tasks = () => {
       throw error // Let the calling component handle the error
     }
   }
-
   const handleCloseModal = () => {
     if (!isSubmitting) {
       setIsModalOpen(false)
@@ -113,7 +121,7 @@ const Tasks = () => {
 
       {/* Main content with top padding to account for fixed header */}
       <div className="pt-16">
-        <TaskList
+<TaskList
           tasks={tasks}
           categories={categories}
           loading={loading}
@@ -122,6 +130,7 @@ const Tasks = () => {
           onTaskDelete={handleDeleteTask}
           onTaskEdit={handleEditTask}
           onCreateTask={handleCreateTask}
+          onReorderTasks={handleReorderTasks}
           onRetry={loadData}
           searchQuery={searchQuery}
           selectedCategory={selectedCategory}

@@ -1,6 +1,24 @@
 import React, { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { toast } from 'react-toastify'
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from '@dnd-kit/core'
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable'
+import {
+  useSortable,
+} from '@dnd-kit/sortable'
+import { CSS } from '@dnd-kit/utilities'
 import { taskService } from '@/services'
 import TaskCard from '@/components/molecules/TaskCard'
 import Button from '@/components/atoms/Button'
@@ -8,6 +26,36 @@ import Checkbox from '@/components/atoms/Checkbox'
 import EmptyState from '@/components/molecules/EmptyState'
 import ErrorState from '@/components/molecules/ErrorState'
 import SkeletonLoader from '@/components/molecules/SkeletonLoader'
+// Sortable Task Card wrapper
+const SortableTaskCard = ({ task, categories, onToggleComplete, onEdit, onDelete, className }) => {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: task.id })
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  }
+
+  return (
+    <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
+      <TaskCard
+        task={task}
+        categories={categories}
+        onToggleComplete={onToggleComplete}
+        onEdit={onEdit}
+        onDelete={onDelete}
+        className={className}
+        isDragging={isDragging}
+      />
+    </div>
+  )
+}
 
 const TaskList = ({ 
   tasks = [], 
@@ -19,41 +67,50 @@ const TaskList = ({
   onTaskEdit,
   onCreateTask,
   onRetry,
+  onReorderTasks,
   searchQuery = '',
   selectedCategory = 'all',
   selectedPriority = 'all',
   selectedStatus = 'all'
 }) => {
-  const [selectedTasks, setSelectedTasks] = useState(new Set())
+const [selectedTasks, setSelectedTasks] = useState(new Set())
   const [bulkActionLoading, setBulkActionLoading] = useState(false)
 
-  // Filter tasks based on current filters
-  const filteredTasks = tasks.filter(task => {
-    // Search filter
-    if (searchQuery && !task.title.toLowerCase().includes(searchQuery.toLowerCase())) {
-      return false
-    }
-    
-    // Category filter
-    if (selectedCategory !== 'all' && task.category !== selectedCategory) {
-      return false
-    }
-    
-    // Priority filter
-    if (selectedPriority !== 'all' && task.priority !== selectedPriority) {
-      return false
-    }
-    
-    // Status filter
-    if (selectedStatus === 'completed' && !task.completed) {
-      return false
-    }
-    if (selectedStatus === 'incomplete' && task.completed) {
-      return false
-    }
-    
-    return true
-  })
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  )
+// Filter and sort tasks based on current filters
+  const filteredTasks = tasks
+    .filter(task => {
+      // Search filter
+      if (searchQuery && !task.title.toLowerCase().includes(searchQuery.toLowerCase())) {
+        return false
+      }
+      
+      // Category filter
+      if (selectedCategory !== 'all' && task.category !== selectedCategory) {
+        return false
+      }
+      
+      // Priority filter
+      if (selectedPriority !== 'all' && task.priority !== selectedPriority) {
+        return false
+      }
+      
+      // Status filter
+      if (selectedStatus === 'completed' && !task.completed) {
+        return false
+      }
+      if (selectedStatus === 'incomplete' && task.completed) {
+        return false
+      }
+      
+      return true
+    })
+    .sort((a, b) => (a.order || 0) - (b.order || 0))
 
   const handleToggleComplete = async (taskId, completed) => {
     try {
@@ -90,6 +147,26 @@ const TaskList = ({
       setSelectedTasks(new Set(filteredTasks.map(task => task.id)))
     } else {
       setSelectedTasks(new Set())
+    }
+}
+
+  const handleDragEnd = async (event) => {
+    const { active, over } = event
+
+    if (active.id !== over?.id) {
+      const oldIndex = filteredTasks.findIndex(task => task.id === active.id)
+      const newIndex = filteredTasks.findIndex(task => task.id === over.id)
+      
+      const reorderedTasks = arrayMove(filteredTasks, oldIndex, newIndex)
+      const taskIds = reorderedTasks.map(task => task.id)
+      
+      try {
+        await onReorderTasks(taskIds)
+        toast.success('Tasks reordered successfully')
+      } catch (error) {
+        toast.error('Failed to reorder tasks')
+        await onRetry() // Refresh to restore original order
+      }
     }
   }
 
@@ -229,40 +306,51 @@ const TaskList = ({
         )}
       </AnimatePresence>
 
-      {/* Task Cards */}
-      <div className="space-y-3">
-        <AnimatePresence>
-          {filteredTasks.map((task, index) => (
-            <motion.div
-              key={task.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, x: -100 }}
-              transition={{ delay: index * 0.05 }}
-              className="relative"
-            >
-              {filteredTasks.length > 1 && (
-                <div className="absolute left-2 top-4 z-10">
-                  <Checkbox
-                    checked={selectedTasks.has(task.id)}
-                    onChange={(e) => handleSelectTask(task.id, e.target.checked)}
-                    className="bg-white/90 backdrop-blur-sm rounded"
+{/* Task Cards */}
+      <DndContext
+        sensors={sensors}
+        collisionDetection={closestCenter}
+        onDragEnd={handleDragEnd}
+      >
+        <div className="space-y-3">
+          <SortableContext 
+            items={filteredTasks.map(task => task.id)}
+            strategy={verticalListSortingStrategy}
+          >
+            <AnimatePresence>
+              {filteredTasks.map((task, index) => (
+                <motion.div
+                  key={task.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, x: -100 }}
+                  transition={{ delay: index * 0.05 }}
+                  className="relative"
+                >
+                  {filteredTasks.length > 1 && (
+                    <div className="absolute left-2 top-4 z-10">
+                      <Checkbox
+                        checked={selectedTasks.has(task.id)}
+                        onChange={(e) => handleSelectTask(task.id, e.target.checked)}
+                        className="bg-white/90 backdrop-blur-sm rounded"
+                      />
+                    </div>
+                  )}
+                  
+                  <SortableTaskCard
+                    task={task}
+                    categories={categories}
+                    onToggleComplete={handleToggleComplete}
+                    onEdit={onTaskEdit}
+                    onDelete={handleDelete}
+                    className={filteredTasks.length > 1 ? 'pl-10' : ''}
                   />
-                </div>
-              )}
-              
-              <TaskCard
-                task={task}
-                categories={categories}
-                onToggleComplete={handleToggleComplete}
-                onEdit={onTaskEdit}
-                onDelete={handleDelete}
-                className={filteredTasks.length > 1 ? 'pl-10' : ''}
-              />
-            </motion.div>
-          ))}
-        </AnimatePresence>
-      </div>
+                </motion.div>
+              ))}
+            </AnimatePresence>
+          </SortableContext>
+        </div>
+      </DndContext>
     </div>
   )
 }

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { forwardRef } from 'react'
 import { motion } from 'framer-motion'
 import { format, isToday, isTomorrow, isPast } from 'date-fns'
 import Checkbox from '@/components/atoms/Checkbox'
@@ -6,14 +6,16 @@ import Badge from '@/components/atoms/Badge'
 import Button from '@/components/atoms/Button'
 import ApperIcon from '@/components/ApperIcon'
 
-const TaskCard = ({ 
+const TaskCard = forwardRef(({ 
   task, 
   onToggleComplete, 
   onEdit, 
   onDelete,
   categories = [],
-  className = '' 
-}) => {
+  className = '',
+  isDragging = false,
+  ...props
+}, ref) => {
   const category = categories.find(cat => cat.id === task.category)
   
   const getPriorityColor = (priority) => {
@@ -44,19 +46,22 @@ const TaskCard = ({
 
   const dueDateInfo = getDueDateDisplay(task.dueDate)
 
-  return (
+return (
     <motion.div
+      ref={ref}
       layout
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, x: -100 }}
-      whileHover={{ scale: 1.01, boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)' }}
+      whileHover={!isDragging ? { scale: 1.01, boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)' } : {}}
       className={`
         bg-white rounded-lg border border-surface-200 p-4 
         transition-all duration-200 hover:border-surface-300
         ${task.completed ? 'opacity-75' : ''}
+        ${isDragging ? 'opacity-50 rotate-3 shadow-lg z-50' : ''}
         ${className}
       `}
+      {...props}
     >
       <div className="flex items-start space-x-3">
         <div className="flex-shrink-0 mt-1">
@@ -112,8 +117,14 @@ const TaskCard = ({
                 )}
               </div>
             </div>
-            
-            <div className="flex items-center space-x-1 ml-2">
+<div className="flex items-center space-x-1 ml-2">
+              <Button
+                variant="ghost"
+                size="small"
+                icon="GripVertical"
+                className="p-1.5 text-surface-400 hover:text-surface-600 cursor-grab active:cursor-grabbing"
+                title="Drag to reorder"
+              />
               <Button
                 variant="ghost"
                 size="small"
@@ -129,11 +140,13 @@ const TaskCard = ({
                 className="p-1.5 text-error hover:text-error hover:bg-error/10"
               />
             </div>
-          </div>
+</div>
         </div>
       </div>
     </motion.div>
   )
-}
+})
+
+TaskCard.displayName = 'TaskCard'
 
 export default TaskCard
