@@ -21,7 +21,7 @@ const TaskForm = ({
   })
   const [errors, setErrors] = useState({})
 
-  useEffect(() => {
+useEffect(() => {
     if (task) {
       setFormData({
         title: task.title || '',
