@@ -150,12 +150,12 @@ const [selectedTasks, setSelectedTasks] = useState(new Set())
     }
 }
 
-  const handleDragEnd = async (event) => {
+const handleDragEnd = async (event) => {
     const { active, over } = event
 
-    if (active.id !== over?.id) {
+    if (active.id !== over?.id && over?.id) {
       const oldIndex = filteredTasks.findIndex(task => task.id === active.id)
-      const newIndex = filteredTasks.findIndex(task => task.id === over.id)
+      const newIndex = filteredTasks.findIndex(task => task.id === over?.id)
       
       const reorderedTasks = arrayMove(filteredTasks, oldIndex, newIndex)
       const taskIds = reorderedTasks.map(task => task.id)
