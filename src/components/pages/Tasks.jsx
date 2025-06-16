@@ -108,37 +108,25 @@ const Tasks = () => {
     }
   }
 
-  return (
+return (
     <>
-      {/* Override header with quick add functionality */}
-      <div className="fixed top-0 left-64 right-0 z-30">
-        <Header
-          searchQuery={searchQuery}
-          onSearchChange={() => {}} // Handled by Layout
-          onQuickAdd={handleCreateTask}
-        />
-      </div>
-
-      {/* Main content with top padding to account for fixed header */}
-      <div className="pt-16">
-<TaskList
-          tasks={tasks}
-          categories={categories}
-          loading={loading}
-          error={error}
-          onTaskUpdate={handleUpdateTask}
-          onTaskDelete={handleDeleteTask}
-          onTaskEdit={handleEditTask}
-          onCreateTask={handleCreateTask}
-          onReorderTasks={handleReorderTasks}
-          onRetry={loadData}
-          searchQuery={searchQuery}
-          selectedCategory={selectedCategory}
-          selectedPriority={selectedPriority}
-          selectedStatus={selectedStatus}
-        />
-      </div>
-
+      <TaskList
+        tasks={tasks}
+tasks={tasks}
+        categories={categories}
+        loading={loading}
+        error={error}
+        onTaskUpdate={handleUpdateTask}
+        onTaskDelete={handleDeleteTask}
+        onTaskEdit={handleEditTask}
+        onCreateTask={handleCreateTask}
+        onReorderTasks={handleReorderTasks}
+        onRetry={loadData}
+        searchQuery={searchQuery}
+        selectedCategory={selectedCategory}
+        selectedPriority={selectedPriority}
+        selectedStatus={selectedStatus}
+      />
       {/* Task Modal */}
       <TaskModal
         isOpen={isModalOpen}
