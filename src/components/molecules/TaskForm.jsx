@@ -488,9 +488,12 @@ disabled={isSubmitting}
           icon={task ? "Save" : "Plus"}
         >
           {task ? 'Update Task' : 'Create Task'}
+>
+          {task ? 'Update Task' : 'Create Task'}
         </Button>
       </div>
     </motion.form>
-}
+  );
+};
 
-export default TaskForm
+export default TaskForm;
