@@ -319,9 +319,9 @@ disabled={isSubmitting}
               transition={{ duration: 0.2 }}
               className="space-y-3"
             >
-              {/* Subtask Form */}
+{/* Subtask Form */}
               {showSubtaskForm && (
-                <motion.form
+                <motion.div
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -10 }}
@@ -375,15 +375,15 @@ disabled={isSubmitting}
                       <Button
                         type="submit"
                         size="small"
+                        onClick={handleSubtaskSubmit}
                         disabled={!subtaskFormData.name.trim() || isSubmitting}
                       >
                         {editingSubtask ? 'Update' : 'Add'} Subtask
                       </Button>
                     </div>
                   </div>
-                </motion.form>
+                </motion.div>
               )}
-
               {/* Subtasks List */}
               {subtasks.length > 0 && (
                 <div className="space-y-2">
