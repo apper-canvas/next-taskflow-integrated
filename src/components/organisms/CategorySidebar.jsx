@@ -18,9 +18,10 @@ const [categories, setCategories] = useState([])
   const [tasks, setTasks] = useState([])
   const [loading, setLoading] = useState(false)
   const [showAddForm, setShowAddForm] = useState(false)
-  const [newCategoryName, setNewCategoryName] = useState('')
+const [newCategoryName, setNewCategoryName] = useState('')
   const [newCategoryColor, setNewCategoryColor] = useState('#5B4CFF')
   const [creating, setCreating] = useState(false)
+  const [showCategoryModal, setShowCategoryModal] = useState(false)
 
   useEffect(() => {
     loadData()
@@ -222,17 +223,16 @@ const loadData = async () => {
           transition={{ delay: 0.5 }}
           className="pt-4 border-t border-surface-200"
         >
-          <div className="space-y-3">
+<div className="space-y-3">
             <Button
               variant="ghost"
               size="small"
               icon="Plus"
-              onClick={toggleAddForm}
+              onClick={() => setShowCategoryModal(true)}
               className="w-full justify-start"
             >
               Add Category
             </Button>
-
             {showAddForm && (
               <motion.div
                 initial={{ opacity: 0, height: 0 }}
@@ -307,8 +307,25 @@ const loadData = async () => {
               </motion.div>
             )}
           </div>
-        </motion.div>
+</motion.div>
       </div>
+      
+      {/* Category Modal - Placeholder for modal implementation */}
+      {showCategoryModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md">
+            <h3 className="text-lg font-semibold mb-4">Add New Category</h3>
+            <p className="text-surface-600 mb-4">CategoryModal component needs to be implemented</p>
+            <Button 
+              variant="ghost" 
+              onClick={() => setShowCategoryModal(false)}
+              className="w-full"
+            >
+              Close
+            </Button>
+          </div>
+        </div>
+      )}
     </aside>
   )
 }
