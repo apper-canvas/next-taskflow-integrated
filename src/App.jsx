@@ -6,6 +6,8 @@ import { routeArray } from '@/config/routes'
 import 'react-toastify/dist/ReactToastify.css'
 
 function App() {
+  const IndexComponent = routeArray?.[0]?.component || (() => <div>No routes available</div>);
+  
   return (
     <BrowserRouter>
       <Routes>
@@ -17,7 +19,7 @@ function App() {
               element={<route.component />} 
             />
           ))}
-          <Route index element={<routeArray[0].component />} />
+          <Route index element={<IndexComponent />} />
         </Route>
       </Routes>
       <ToastContainer
